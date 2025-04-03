@@ -24,18 +24,35 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(buil
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
 // Cookie-based authentication configuration
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
     .AddCookie(options =>
     {
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetSection("JwtConfig").GetValue<int>("ExpirationMinutes"));
-        options.SlidingExpiration = true; // Extends expiration time on each request
+        options.SlidingExpiration = true;
         options.Cookie.Name = "session";
         options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.Domain = builder.Configuration["AllowedHosts"] ?? string.Empty; // Set the cookie domain
-        options.Cookie.Path = "/"; // Set the cookie path
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Use SameAsRequest for development
+        options.Cookie.Domain = builder.Configuration["AllowedHosts"] ?? string.Empty;
+        options.Cookie.Path = "/";
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
+    
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        };
     });
+
 
 //Add authorization
 builder.Services.AddAuthorization();
@@ -60,9 +77,6 @@ app.UseRouting();
 
 // Apply the CORS policy
 app.UseCors("AllowSpecificOrigin");
-
-// Use HttpsRedirection is used to redirect HTTP requests to HTTPS
-app.UseHttpsRedirection();
 
 // Enables authentication
 app.UseAuthentication();

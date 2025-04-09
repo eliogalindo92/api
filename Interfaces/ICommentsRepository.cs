@@ -3,5 +3,4 @@ using Models;
 
 public interface ICommentsRepository: IRepository<Comment>
 {
- 
 }

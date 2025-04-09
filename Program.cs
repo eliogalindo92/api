@@ -14,8 +14,12 @@ builder.Services.AddScoped<UsersService>(); // Register UsersService
 builder.Services.AddScoped<AuthService>(); // Register AuthService
 builder.Services.AddScoped<StocksService>(); // Register StocksService
 builder.Services.AddScoped<CommentsService>(); // Register CommentsService
+builder.Services.AddScoped<RolesService>(); // Register RolesService
+builder.Services.AddScoped<PermissionsService>(); // Register PermissionsService
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>(); // Register StocksRepository
+builder.Services.AddScoped<IRolesRepository, RolesRepository>(); // Register RolesRepository
+builder.Services.AddScoped<IPermissionsRepository, PermissionsRepository>(); // Register PermissionsRepository
 builder.Services.AddScoped<IStocksRepository, StocksRepository>(); // Register StocksRepository
 builder.Services.AddScoped<ICommentsRepository, CommentsRepository>(); // Register CommentsRepository
 
@@ -56,14 +60,29 @@ builder.Services.AddAuthentication(options =>
 
 //Add authorization
 builder.Services.AddAuthorization();
+
 // Add CORS services
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        corsPolicyBuilder => corsPolicyBuilder.WithOrigins(builder.Configuration["AllowedHosts"] ?? string.Empty)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
+    options.AddPolicy("AllowSpecificOrigin", corsPolicyBuilder =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            corsPolicyBuilder
+                .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+        else
+        {
+            corsPolicyBuilder
+                .WithOrigins(builder.Configuration["AllowedHosts"] ?? string.Empty)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    });
 });
 
 var app = builder.Build(); // Build the app after adding services

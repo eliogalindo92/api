@@ -1,4 +1,5 @@
 namespace api.Dtos.User;
+using Models;
 using System.ComponentModel.DataAnnotations;
 
 public class UserDto
@@ -13,4 +14,6 @@ public class UserDto
     [MaxLength (10)]
     public string Status { get; set; } = String.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    
+    public List<Role> Roles { get; set; } = new List<Role>();
 }

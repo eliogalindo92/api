@@ -59,8 +59,8 @@ public class StocksRepository(AppDbContext context): IStocksRepository
            var foundStock = await context.Stocks.FirstOrDefaultAsync(stock => stock.Id == stockToUpdate.Id);
            if (foundStock is null) return false;
            context.Entry(foundStock).CurrentValues.SetValues(stockToUpdate);
-           await context.SaveChangesAsync();
-           return true;
+           var result = await context.SaveChangesAsync();
+           return result > 0;
 
         }
         catch (Exception e)
@@ -77,8 +77,8 @@ public class StocksRepository(AppDbContext context): IStocksRepository
             var stock = await context.Stocks.FirstOrDefaultAsync(stock => stock.Id == id);
             if (stock == null) return false;
             context.Stocks.Remove(stock);
-            await context.SaveChangesAsync();
-            return true;
+            var result = await context.SaveChangesAsync();
+            return result > 0;
         }
         catch (Exception e)
         {

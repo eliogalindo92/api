@@ -1,9 +1,8 @@
 namespace api.Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Dtos.Auth;
 using Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -12,7 +11,11 @@ using System.Security.Claims;
 [ApiController]
 [Route("[controller]")]
 public class AuthController(AuthService authService) : ControllerBase
-{
+
+{ 
+    // Defines a constant name for permission's claim type 
+    private const string PermissionClaimType = "permission";
+    
     [HttpPost("sign-in")]
     public async Task<IActionResult> SignIn([FromBody]AuthDto authDto)
     {
@@ -20,17 +23,29 @@ public class AuthController(AuthService authService) : ControllerBase
 
         if (user is null) return Unauthorized(new { Message = "Invalid credentials" });
         
-        // Generate JWT token
-        var jwtToken = authService.GenerateJwtToken(user);
-
+        // Extract roles and permissions lists
+        var roles = user.Roles
+            .Select(role => role.Denomination)
+            .Distinct()
+            .ToList();
+       
+        var permissions = user.Roles // For each user's role
+            .SelectMany(role => role.Permissions) // Gets all permissions (flatten the list)
+            .Select(permission => permission.Denomination) // Takes each permission name
+            .Distinct() // Secures that each permission is not repeated
+            .ToList();
+       
         // Create claims for the cookie
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.Username),
             new(ClaimTypes.Email, user.Email),
-            new("jwt", jwtToken) // Storages the JWT token in a claim
         };
+        // Adds roles as standard claims
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        // Adds unique permissions as custom claims
+        claims.AddRange(permissions.Select(permission => new Claim(PermissionClaimType, permission)));
 
         var claimsIdentity = new ClaimsIdentity(
             claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -47,14 +62,47 @@ public class AuthController(AuthService authService) : ControllerBase
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
-
-        return Ok(new { Message = "User successfully signed in" });
+        
+        var userInfo = new UserInfoDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            Roles = roles,
+            Permissions = permissions
+            
+        };
+        return Ok(userInfo);
     }
 
     [HttpPost("sign-out")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Ok(new { Message = "User successfully signed out" });
+        return NoContent();
+    }
+    
+    [Authorize] 
+    [HttpGet("status")]
+    public IActionResult GetAuthStatus()
+    {
+
+        // Extracts the claims information already in HttpContext.User
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var userInfo = new UserInfoDto
+        {
+            Id = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)),
+            Username = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty,
+            Email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty,
+            Roles = User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToList(),
+            Permissions = User.FindAll(PermissionClaimType).Select(claim => claim.Value).ToList(),
+        };
+
+        return Ok(userInfo);
     }
 }

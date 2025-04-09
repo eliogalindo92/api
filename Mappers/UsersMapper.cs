@@ -2,7 +2,6 @@ namespace api.Mappers;
 using Dtos.User;
 using Models;
 
-
 public static class UsersMapper
 {
     public static UserDto ToUserDto(this User user)
@@ -15,9 +14,10 @@ public static class UsersMapper
             Email = user.Email,
             Status = user.Status,
             CreatedAt = user.CreatedAt,
+            Roles = user.Roles
         };
     }  
-    public static User FromCreateUserDto(this CreateUserDto createUserDto)
+    public static User FromCreateUserDto(this CreateUserDto createUserDto, List<Role> roles)
     {
         return new User
         {
@@ -26,6 +26,7 @@ public static class UsersMapper
             Email = createUserDto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password),
             Status = createUserDto.Status,
+            Roles = roles,
         };
     }
     public static User FromUpdateUserDto(this UpdateUserDto updateUserDto, int id)

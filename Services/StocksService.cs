@@ -61,7 +61,7 @@ public class StocksService(IStocksRepository stocksRepository)
         return await stocksRepository.DeleteAsync(id);
     }
     
-    public async Task<bool> Exists(int id)
+    public async Task<Boolean> Exists(int id)
     {
         try
         { 

@@ -44,8 +44,8 @@ public class CommentsRepository (AppDbContext context): ICommentsRepository
         var foundComment = await context.Comments.FirstOrDefaultAsync(comment => comment.Id == commentToUpdate.Id);
         if (foundComment == null) return false;
         context.Entry(foundComment).CurrentValues.SetValues(commentToUpdate);
-        await context.SaveChangesAsync();
-        return true;
+        var result = await context.SaveChangesAsync();
+        return result > 0;
     }
 
     public async Task<Boolean> DeleteAsync(int id)
@@ -53,7 +53,7 @@ public class CommentsRepository (AppDbContext context): ICommentsRepository
         var comment = await context.Comments.FirstOrDefaultAsync(comment => comment.Id == id);
         if (comment == null) return false;
         context.Comments.Remove(comment);
-        await context.SaveChangesAsync();
-        return true;
+        var result = await context.SaveChangesAsync();
+        return result > 0;
     }
 }

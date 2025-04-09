@@ -13,4 +13,6 @@ public class UpdateUserDto
     public string Password { get; set; } = String.Empty;
     [MaxLength (10)]
     public string Status { get; set; } = String.Empty;
+    
+    public List<int> Roles { get; set; } = new List<int>();
 }

@@ -15,4 +15,5 @@ public class User
     [MaxLength (10)]
     public string Status { get; set; } = String.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public List<Role> Roles { get; set; } = new List<Role>();
 }

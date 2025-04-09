@@ -18,4 +18,6 @@ public class CreateUserDto
     [Required]
     [MaxLength (10)]
     public string Status { get; set; } = String.Empty;
+    [Required]
+    public List<int> Roles { get; set; } = new List<int>();
 }

@@ -4,7 +4,7 @@ using Interfaces;
 using Mappers;
 using Models;
 
-public class UsersService(IUsersRepository usersRepository)
+public class UsersService(IUsersRepository usersRepository, IRolesRepository rolesRepository)
 {
     public async Task<Boolean> Create(CreateUserDto createUserDto)
     {
@@ -12,7 +12,9 @@ public class UsersService(IUsersRepository usersRepository)
         {
             var existingUser = await usersRepository.FindByUsernameAsync(createUserDto.Username);
             if (existingUser != null) return false;
-            var user = createUserDto.FromCreateUserDto();
+            var rolesRelated = await rolesRepository.FindAllByIdAsync(createUserDto.Roles);
+            if (rolesRelated.Count != createUserDto.Roles.Count) return false;
+            var user = createUserDto.FromCreateUserDto(rolesRelated);
             return await usersRepository.CreateAsync(user);
 
         }
@@ -27,7 +29,7 @@ public class UsersService(IUsersRepository usersRepository)
         try
         {
             var users = await usersRepository.FindAllAsync();
-            return users.Select(user => user.ToUserDto()).ToList();
+           return users.Select(user => user.ToUserDto()).ToList();
         }
         catch (Exception e)
         {
@@ -53,9 +55,34 @@ public class UsersService(IUsersRepository usersRepository)
 
     public async Task<Boolean> Update(int id, UpdateUserDto updateUserDto)
     {
-        var user = updateUserDto.FromUpdateUserDto(id);
-        return await usersRepository.UpdateAsync(user);
-
+        try
+        {  
+            var existingUser = await usersRepository.FindByIdWithRolesAsync(id);
+        
+            if (existingUser is null) return false; 
+        
+            existingUser.FullName = updateUserDto.FullName;
+            existingUser.Username = updateUserDto.Username;
+            existingUser.Email = updateUserDto.Email;
+            existingUser.Password = BCrypt.Net.BCrypt.HashPassword(updateUserDto.Password);
+            existingUser.Status = updateUserDto.Status;
+        
+            var newRoles = await rolesRepository
+                .FindAllByIdAsync(updateUserDto.Roles);
+        
+            if (newRoles.Count != updateUserDto.Roles.Distinct().Count()) return false;
+            existingUser.Roles.Clear(); 
+            foreach (var role in newRoles) 
+            {
+                existingUser.Roles.Add(role);
+            }
+            return await usersRepository.UpdateAsync(existingUser); 
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<Boolean> Delete(int id)
@@ -67,7 +94,9 @@ public class UsersService(IUsersRepository usersRepository)
     {
         try
         {
-            return await usersRepository.FindByUsernameAsync(username);
+            var user = await usersRepository.FindByUsernameAsync(username);
+            if (user is null) return null;
+            return user;
         }
         catch (Exception e)
         {

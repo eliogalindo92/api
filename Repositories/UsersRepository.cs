@@ -4,8 +4,6 @@ using Interfaces;
 using Models;
 using Microsoft.EntityFrameworkCore;
 
-
-
 public class UsersRepository(AppDbContext context): IUsersRepository
 {
     public async Task<Boolean> CreateAsync(User user)
@@ -15,7 +13,6 @@ public class UsersRepository(AppDbContext context): IUsersRepository
             await context.Users.AddAsync(user);
             var result = await context.SaveChangesAsync();
             return result > 0;
-
         }
         catch (Exception e)
         {
@@ -28,7 +25,27 @@ public class UsersRepository(AppDbContext context): IUsersRepository
     {
         try
         {
-            return await context.Users.ToListAsync();
+            return await context.Users.Select(user => new User
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Username = user.Username,
+                Email = user.Email,
+                Status = user.Status,
+                CreatedAt = user.CreatedAt,
+                Roles = user.Roles.Select(role => new Role
+                {
+                    Id = role.Id,
+                    Denomination = role.Denomination,
+                    Description = role.Description,
+                    Permissions = role.Permissions.Select(permission => new Permission
+                    {
+                        Id = permission.Id,
+                        Denomination = permission.Denomination,
+                        Description = permission.Description
+                    }).ToList()
+                }).ToList()
+            }).ToListAsync();
         }
         catch (Exception e)
         {
@@ -41,8 +58,28 @@ public class UsersRepository(AppDbContext context): IUsersRepository
     {
         try
         {
-            return await context.Users.FindAsync(id);
-
+            return await context.Users.Where(user => user.Id == id)
+                .Select(user => new User
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Status = user.Status,
+                    CreatedAt = user.CreatedAt,
+                    Roles = user.Roles.Select(role => new Role
+                    {
+                        Id = role.Id,
+                        Denomination = role.Denomination,
+                        Description = role.Description,
+                        Permissions = role.Permissions.Select(permission => new Permission
+                        {
+                            Id = permission.Id,
+                            Denomination = permission.Denomination,
+                            Description = permission.Description
+                        }).ToList()
+                    }).ToList()
+                }).FirstOrDefaultAsync();
         }
         catch (Exception e)
         {
@@ -55,11 +92,8 @@ public class UsersRepository(AppDbContext context): IUsersRepository
     {
         try
         {
-            var foundUser = await context.Users.FirstOrDefaultAsync(user => user.Id == userToUpdate.Id);
-            if (foundUser is null) return false;
-            context.Entry(foundUser).CurrentValues.SetValues(userToUpdate);
-            await context.SaveChangesAsync();
-            return true;
+            var result = await context.SaveChangesAsync();
+            return result > 0;
         }
         catch (Exception e)
         {
@@ -75,8 +109,8 @@ public class UsersRepository(AppDbContext context): IUsersRepository
             var user = await context.Users.FirstOrDefaultAsync(user => user.Id == id);
             if (user is null) return false;
             context.Users.Remove(user);
-            await context.SaveChangesAsync();
-            return true;
+            var result = await context.SaveChangesAsync();
+            return result > 0;
         }
         catch (Exception e)
         {
@@ -89,7 +123,44 @@ public class UsersRepository(AppDbContext context): IUsersRepository
     {
         try
         {
-            return await context.Users.FirstOrDefaultAsync(user => user.Username == username);
+            return await context.Users.Where(user => user.Username == username)
+                .Select(user => new User
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Status = user.Status,
+                    CreatedAt = user.CreatedAt,
+                    Password = user.Password,
+                    Roles = user.Roles.Select(role => new Role
+                    {
+                        Id = role.Id,
+                        Denomination = role.Denomination,
+                        Description = role.Description,
+                        Permissions = role.Permissions.Select(permission => new Permission
+                        {
+                            Id = permission.Id,
+                            Denomination = permission.Denomination,
+                            Description = permission.Description
+                        }).ToList()
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<User?> FindByIdWithRolesAsync(int id)
+    {
+        try
+        {
+            return await context.Users
+                .Include(user => user.Roles)
+                .FirstOrDefaultAsync(user => user.Id == id);
         }
         catch (Exception e)
         {

@@ -22,34 +22,73 @@ namespace api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PermissionRole", b =>
+            modelBuilder.Entity("RolePermissions", b =>
                 {
+                    b.Property<int>("RolesId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PermissionsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RolesId")
-                        .HasColumnType("int");
+                    b.HasKey("RolesId", "PermissionsId");
 
-                    b.HasKey("PermissionsId", "RolesId");
-
-                    b.HasIndex("RolesId");
+                    b.HasIndex("PermissionsId");
 
                     b.ToTable("RolePermissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            RolesId = 1,
+                            PermissionsId = 1
+                        },
+                        new
+                        {
+                            RolesId = 1,
+                            PermissionsId = 2
+                        },
+                        new
+                        {
+                            RolesId = 1,
+                            PermissionsId = 3
+                        },
+                        new
+                        {
+                            RolesId = 1,
+                            PermissionsId = 4
+                        },
+                        new
+                        {
+                            RolesId = 1,
+                            PermissionsId = 5
+                        },
+                        new
+                        {
+                            RolesId = 2,
+                            PermissionsId = 6
+                        });
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
+            modelBuilder.Entity("UserRoles", b =>
                 {
-                    b.Property<int>("RolesId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("RolesId", "UsersId");
+                    b.Property<int>("RolesId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("UsersId");
+                    b.HasKey("UsersId", "RolesId");
+
+                    b.HasIndex("RolesId");
 
                     b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UsersId = 1,
+                            RolesId = 1
+                        });
                 });
 
             modelBuilder.Entity("api.Models.Comment", b =>
@@ -110,6 +149,50 @@ namespace api.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "users.read",
+                            Description = "Read users"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "users.write",
+                            Description = "Create or Update users"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "users.delete",
+                            Description = "Delete users"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "roles.read",
+                            Description = "Read roles"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "roles.write",
+                            Description = "Create or Update roles"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "roles.delete",
+                            Description = "Delete roles"
+                        });
                 });
 
             modelBuilder.Entity("api.Models.Role", b =>
@@ -142,6 +225,24 @@ namespace api.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "Admin",
+                            Description = "System administrator",
+                            Enabled = true
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Denomination = "User",
+                            Description = "Standard user",
+                            Enabled = true
+                        });
                 });
 
             modelBuilder.Entity("api.Models.Stock", b =>
@@ -222,9 +323,21 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@domain.com",
+                            FullName = "Main Administrator",
+                            Password = "$2a$11$PixMwN5Wo4vfx0RT9OauVuaLXAB6HgfhObEpMYJYwlN7ConG5UK6i",
+                            Status = "Enabled",
+                            Username = "admin"
+                        });
                 });
 
-            modelBuilder.Entity("PermissionRole", b =>
+            modelBuilder.Entity("RolePermissions", b =>
                 {
                     b.HasOne("api.Models.Permission", null)
                         .WithMany()
@@ -239,7 +352,7 @@ namespace api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RoleUser", b =>
+            modelBuilder.Entity("UserRoles", b =>
                 {
                     b.HasOne("api.Models.Role", null)
                         .WithMany()

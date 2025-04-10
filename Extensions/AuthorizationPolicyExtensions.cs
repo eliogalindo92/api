@@ -11,10 +11,22 @@ public static class AuthorizationPolicyExtensions
         {
             
             options.AddPolicy("RequireReadUsers", policy =>
-                policy.RequireClaim(PermissionClaimType, "ReadUsers"));
+                policy.RequireClaim(PermissionClaimType, "users.read"));
 
-            options.AddPolicy("RequireCreateUsers", policy =>
-                policy.RequireClaim(PermissionClaimType, "CreateUsers"));
+            options.AddPolicy("RequireWriteUsers", policy =>
+                policy.RequireClaim(PermissionClaimType, "users.write"));
+
+            options.AddPolicy("RequireDeleteUsers", policy =>
+                            policy.RequireClaim(PermissionClaimType, "users.delete"));
+            
+            options.AddPolicy("RequireReadRoles", policy =>
+                            policy.RequireClaim(PermissionClaimType, "roles.read"));
+            
+            options.AddPolicy("RequireWriteRoles", policy =>
+                            policy.RequireClaim(PermissionClaimType, "roles.write"));
+            
+            options.AddPolicy("RequireDeleteRoles", policy =>
+                            policy.RequireClaim(PermissionClaimType, "roles.delete"));
 
             options.AddPolicy("CanManageOwnProfile", policy =>
                 policy.RequireClaim(PermissionClaimType, "ReadOwnProfile", "EditOwnProfile"));
@@ -23,7 +35,7 @@ public static class AuthorizationPolicyExtensions
 
             options.AddPolicy("AdminOrCanDelete", policy => policy.RequireAssertion(context =>
                 context.User.IsInRole("Admin") ||
-                context.User.HasClaim(claim => claim is { Type: PermissionClaimType, Value: "DeleteUsers" })
+                context.User.HasClaim(claim => claim is { Type: PermissionClaimType, Value: "users.delete" })
             ));
             
         });

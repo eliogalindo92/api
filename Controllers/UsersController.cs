@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 [Route("[controller]")]
 public class UsersController(UsersService usersService): ControllerBase
 {
-    [Authorize(Policy = "RequireCreateUsers")]
+    [Authorize(Policy = "RequireWriteUsers")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
     {

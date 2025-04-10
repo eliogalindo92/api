@@ -1,5 +1,6 @@
 using api.Configs;
 using api.Context;
+using api.Extensions;
 using api.Interfaces;
 using api.Repositories;
 using api.Services;
@@ -59,7 +60,7 @@ builder.Services.AddAuthentication(options =>
 
 
 //Add authorization
-builder.Services.AddAuthorization();
+builder.Services.AddCustomAuthorizationPolicies();
 
 // Add CORS services
 builder.Services.AddCors(options =>

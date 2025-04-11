@@ -1,6 +1,5 @@
-using api.Models;
-
 namespace api.Dtos.Roles;
+using Permissions;
 
 public class RoleDto
 {
@@ -9,5 +8,5 @@ public class RoleDto
     public string Description { get; set; } = string.Empty;
     public Boolean Enabled { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
-    public List<Permission> Permissions { get; set; } = new List<Permission>();
+    public List<PermissionDto> Permissions { get; set; } = new List<PermissionDto>();
 }

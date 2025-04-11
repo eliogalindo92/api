@@ -1,3 +1,5 @@
+using api.Dtos.Permissions;
+
 namespace api.Mappers;
 using Dtos.Roles;
 using Models;
@@ -13,7 +15,13 @@ public static class RolesMapper
             Description = role.Description,
             Enabled = role.Enabled,
             CreatedAt = role.CreatedAt,
-            Permissions = role.Permissions
+            Permissions = role.Permissions.Select(permission => new PermissionDto
+            {
+                Id = permission.Id,
+                Denomination = permission.Denomination,
+                Description = permission.Description,
+                CreatedAt = permission.CreatedAt,
+            }).ToList()
         };
     }
     public static Role FromCreateRoleDto(this CreateRoleDto createRoleDto, List<Permission> permissions)
@@ -23,17 +31,6 @@ public static class RolesMapper
             Denomination = createRoleDto.Denomination,
             Description = createRoleDto.Description,
             Enabled = createRoleDto.Enabled,
-            Permissions = permissions,
-        };
-    }
-    public static Role FromUpdateRoleDto(this UpdateRoleDto updateRoleDto, List<Permission> permissions, int id)
-    {
-        return new Role
-        {
-            Id = id,
-            Denomination = updateRoleDto.Denomination,
-            Description = updateRoleDto.Description,
-            Enabled = updateRoleDto.Enabled,
             Permissions = permissions,
         };
     }

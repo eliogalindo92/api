@@ -1,4 +1,6 @@
 namespace api.Mappers;
+using Dtos.Permissions;
+using Dtos.Roles;
 using Dtos.User;
 using Models;
 
@@ -14,7 +16,21 @@ public static class UsersMapper
             Email = user.Email,
             Status = user.Status,
             CreatedAt = user.CreatedAt,
-            Roles = user.Roles
+            Roles = user.Roles.Select(role => new RoleDto
+            {
+                Id = role.Id,
+                Denomination = role.Denomination,
+                Description = role.Description,
+                Enabled = role.Enabled,
+                CreatedAt = role.CreatedAt,
+                Permissions = role.Permissions.Select(permission => new PermissionDto
+                {
+                    Id = permission.Id,
+                    Denomination = permission.Denomination,
+                    Description = permission.Description,
+                    CreatedAt = permission.CreatedAt,
+                }).ToList()
+            }).ToList(),
         };
     }  
     public static User FromCreateUserDto(this CreateUserDto createUserDto, List<Role> roles)
@@ -27,18 +43,6 @@ public static class UsersMapper
             Password = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password),
             Status = createUserDto.Status,
             Roles = roles,
-        };
-    }
-    public static User FromUpdateUserDto(this UpdateUserDto updateUserDto, int id)
-    {
-        return new User
-        {
-            Id = id,
-            FullName = updateUserDto.FullName,
-            Username = updateUserDto.Username,
-            Email = updateUserDto.Email,
-            Password = BCrypt.Net.BCrypt.HashPassword(updateUserDto.Password),
-            Status = updateUserDto.Status,
         };
     }
 }

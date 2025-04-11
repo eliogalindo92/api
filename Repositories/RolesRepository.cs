@@ -64,7 +64,8 @@ public class RolesRepository(AppDbContext context): IRolesRepository
                 {
                     Id = permission.Id,
                     Denomination = permission.Denomination,
-                    Description = permission.Description
+                    Description = permission.Description,
+                    CreatedAt = permission.CreatedAt
                 }).ToList()
             }).FirstOrDefaultAsync();
 

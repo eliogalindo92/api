@@ -38,11 +38,14 @@ public class UsersRepository(AppDbContext context): IUsersRepository
                     Id = role.Id,
                     Denomination = role.Denomination,
                     Description = role.Description,
+                    Enabled = role.Enabled,
+                    CreatedAt = role.CreatedAt,
                     Permissions = role.Permissions.Select(permission => new Permission
                     {
                         Id = permission.Id,
                         Denomination = permission.Denomination,
-                        Description = permission.Description
+                        Description = permission.Description,
+                        CreatedAt = permission.CreatedAt
                     }).ToList()
                 }).ToList()
             }).ToListAsync();
@@ -72,11 +75,14 @@ public class UsersRepository(AppDbContext context): IUsersRepository
                         Id = role.Id,
                         Denomination = role.Denomination,
                         Description = role.Description,
+                        Enabled = role.Enabled,
+                        CreatedAt = role.CreatedAt,
                         Permissions = role.Permissions.Select(permission => new Permission
                         {
                             Id = permission.Id,
                             Denomination = permission.Denomination,
-                            Description = permission.Description
+                            Description = permission.Description,
+                            CreatedAt = permission.CreatedAt
                         }).ToList()
                     }).ToList()
                 }).FirstOrDefaultAsync();
@@ -123,7 +129,8 @@ public class UsersRepository(AppDbContext context): IUsersRepository
     {
         try
         {
-            return await context.Users.Where(user => user.Username == username)
+            return await context.Users
+                .Where(user => user.Username == username)
                 .Select(user => new User
                 {
                     Id = user.Id,
@@ -138,14 +145,18 @@ public class UsersRepository(AppDbContext context): IUsersRepository
                         Id = role.Id,
                         Denomination = role.Denomination,
                         Description = role.Description,
+                        Enabled = role.Enabled,
+                        CreatedAt = role.CreatedAt,
                         Permissions = role.Permissions.Select(permission => new Permission
                         {
                             Id = permission.Id,
                             Denomination = permission.Denomination,
-                            Description = permission.Description
+                            Description = permission.Description,
+                            CreatedAt = permission.CreatedAt
                         }).ToList()
                     }).ToList()
-                }).FirstOrDefaultAsync();
+                })
+                .FirstOrDefaultAsync();
         }
         catch (Exception e)
         {

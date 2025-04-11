@@ -66,7 +66,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                             new { RolesId = adminRoleId, PermissionsId = permDeleteUsers.Id },
                             new { RolesId = adminRoleId, PermissionsId = permReadRoles.Id },
                             new { RolesId = adminRoleId, PermissionsId = permWriteRoles.Id },
-                            new { RolesId = userRoleId, PermissionsId = permDeleteRoles.Id }
+                            new { RolesId = adminRoleId, PermissionsId = permDeleteRoles.Id }
                         
                         );
                     });

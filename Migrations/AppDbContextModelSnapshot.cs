@@ -64,7 +64,7 @@ namespace api.Migrations
                         },
                         new
                         {
-                            RolesId = 2,
+                            RolesId = 1,
                             PermissionsId = 6
                         });
                 });
@@ -154,42 +154,42 @@ namespace api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "users.read",
                             Description = "Read users"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "users.write",
                             Description = "Create or Update users"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "users.delete",
                             Description = "Delete users"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "roles.read",
                             Description = "Read roles"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "roles.write",
                             Description = "Create or Update roles"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "roles.delete",
                             Description = "Delete roles"
                         });
@@ -230,7 +230,7 @@ namespace api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "Admin",
                             Description = "System administrator",
                             Enabled = true
@@ -238,7 +238,7 @@ namespace api.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Denomination = "User",
                             Description = "Standard user",
                             Enabled = true
@@ -328,7 +328,7 @@ namespace api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 4, 10, 18, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 4, 11, 12, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@domain.com",
                             FullName = "Main Administrator",
                             Password = "$2a$11$PixMwN5Wo4vfx0RT9OauVuaLXAB6HgfhObEpMYJYwlN7ConG5UK6i",
